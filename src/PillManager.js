@@ -3,7 +3,13 @@ import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
-const timeRanges = ['5AM-10AM', '10AM-12PM', '12PM-4PM', '4PM-8PM', '8PM-5AM'];
+const timeRangesWithAliases = {
+    '5AM-10AM': 'Morning (5AM-10AM)',
+    '10AM-12PM': 'Noon (10AM-12PM)',
+    '12PM-4PM': 'Afternoon (12PM-4PM)',
+    '4PM-8PM': 'Evening (4PM-8PM)',
+    '8PM-5AM': 'Night (8PM-5AM)'
+};
 
 function PillManager() {
     const [pills, setPills] = useState({});
@@ -23,7 +29,7 @@ function PillManager() {
 
     const mapSchedule = (scheduleArray) => {
         const scheduleMap = {};
-        timeRanges.forEach(range => {
+        Object.keys(timeRangesWithAliases).forEach(range => {
             scheduleMap[range] = { checked: false, count: 1 }; // Default count initialized to 1
         });
         (scheduleArray || []).forEach(item => {
@@ -58,10 +64,10 @@ function PillManager() {
     const updateSchedule = (boxNumber, timeRange, checked, count) => {
         const updatedPills = { ...pills };
         if (!updatedPills[boxNumber].schedule[timeRange]) {
-            updatedPills[boxNumber].schedule[timeRange] = { checked: false, count: 1 }; // Initialize with default count 1
+            updatedPills[boxNumber].schedule[timeRange] = { checked: false, count: 1 };
         }
         updatedPills[boxNumber].schedule[timeRange].checked = checked;
-        updatedPills[boxNumber].schedule[timeRange].count = count ? parseInt(count, 10) : 1; // Use 1 as default if count is not provided
+        updatedPills[boxNumber].schedule[timeRange].count = count ? parseInt(count, 10) : 1;
         setPills(updatedPills);
     };
 
@@ -107,20 +113,20 @@ function PillManager() {
                             <td>{pills[boxNumber].name || "empty"}</td>
                             <td>{boxNumber}</td>
                             <td>
-                                {timeRanges.map(timeRange => (
+                                {Object.entries(pills[boxNumber].schedule).map(([timeRange, { checked, count }]) => (
                                     <div key={timeRange}>
                                         <label>
                                             <input
                                                 type="checkbox"
-                                                checked={pills[boxNumber].schedule[timeRange].checked}
-                                                onChange={e => updateSchedule(boxNumber, timeRange, e.target.checked, pills[boxNumber].schedule[timeRange].count)}
+                                                checked={checked}
+                                                onChange={e => updateSchedule(boxNumber, timeRange, e.target.checked, count)}
                                             />
-                                            {timeRange}
-                                            {pills[boxNumber].schedule[timeRange].checked && (
+                                            {timeRangesWithAliases[timeRange]}
+                                            {checked && (
                                                 <input
                                                     type="number"
                                                     min="1"
-                                                    value={pills[boxNumber].schedule[timeRange].count}
+                                                    value={count}
                                                     onChange={e => updateSchedule(boxNumber, timeRange, true, e.target.value)}
                                                     style={{ marginLeft: '10px' }}
                                                 />
