@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import './PillManager.css'; // Importing the CSS stylesheet
 
 const timeRangeMap = {
     'morning': '5AM-10AM',
@@ -19,13 +20,17 @@ function PillManager() {
     }, []);
 
     const fetchPills = async () => {
-        const response = await axios.get('http://localhost:4000/pills');
-        console.log('response', response);  
-        const updatedPills = response.data.reduce((acc, pill) => {
-            acc[pill.boxNumber] = { ...pill, schedule: mapSchedule(pill.schedule) };
-            return acc;
-        }, {});
-        setPills(updatedPills);
+        try {
+            const response = await axios.get('http://localhost:4000/pills');
+            const updatedPills = response.data.reduce((acc, pill) => {
+                acc[pill.boxNumber] = { ...pill, schedule: mapSchedule(pill.schedule) };
+                return acc;
+            }, {});
+            setPills(updatedPills);
+        } catch (error) {
+            console.error('Error fetching pills:', error);
+            alert('Failed to load pill data: ' + error.message);
+        }
     };
 
     const mapSchedule = (scheduleArray) => {
@@ -49,6 +54,7 @@ function PillManager() {
             await axios.post('http://localhost:4000/addPill', { name, boxNumber });
             fetchPills();
         } catch (error) {
+            console.error('Error adding pill:', error);
             alert('Failed to add pill: ' + error.response.data.error);
         }
     };
@@ -58,15 +64,13 @@ function PillManager() {
             await axios.delete(`http://localhost:4000/deletePill/${boxNumber}`);
             fetchPills();
         } catch (error) {
+            console.error('Error deleting pill:', error);
             alert('Failed to delete pill: ' + error.response.data.error);
         }
     };
 
     const updateSchedule = (boxNumber, timeRange, checked, count) => {
         const updatedPills = { ...pills };
-        if (!updatedPills[boxNumber].schedule[timeRange]) {
-            updatedPills[boxNumber].schedule[timeRange] = { checked: false, count: 1 };
-        }
         updatedPills[boxNumber].schedule[timeRange].checked = checked;
         updatedPills[boxNumber].schedule[timeRange].count = count ? parseInt(count, 10) : 1;
         setPills(updatedPills);
@@ -76,21 +80,21 @@ function PillManager() {
         const scheduleToSend = Object.entries(pills[boxNumber].schedule)
             .filter(([_, details]) => details.checked)
             .map(([timeRange, details]) => ({
-                timeRange: timeRange, // Send alias instead of actual time range
+                timeRange,
                 count: details.count
             }));
 
         try {
-            console.log('scheduleToSend', scheduleToSend);
             await axios.post('http://localhost:4000/updateSchedule', { boxNumber, schedule: scheduleToSend });
             alert('Schedule saved successfully!');
         } catch (error) {
+            console.error('Error saving schedule:', error);
             alert('Failed to save schedule: ' + error.response.data.error);
         }
     };
 
     return (
-        <div>
+        <div className="container">
             <form onSubmit={handleAddPill}>
                 <input type="text" name="name" required placeholder="Pill Name" />
                 <select name="boxNumber" required>
@@ -139,7 +143,7 @@ function PillManager() {
                                 <button onClick={() => saveSchedule(boxNumber)}>Save</button>
                             </td>
                             <td>
-                                <button onClick={() => handleDeletePill(boxNumber)} style={{ border: 'none', background: 'none' }}>
+                                <button onClick={() => handleDeletePill(boxNumber)}  >
                                     <FontAwesomeIcon icon={faTrash} />
                                 </button>
                             </td>
