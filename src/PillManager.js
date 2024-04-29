@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faSortUp } from '@fortawesome/free-solid-svg-icons';
 import './PillManager.css'; // Importing the CSS stylesheet
 
 const timeRangeMap = {
@@ -108,7 +108,7 @@ function PillManager() {
                 <thead>
                     <tr>
                         <th>Pill Name</th>
-                        <th>Box Number</th>
+                        <th>Box Number <FontAwesomeIcon icon={faSortUp} /></th>
                         <th>Schedule</th>
                         <th>Action</th>
                     </tr>
