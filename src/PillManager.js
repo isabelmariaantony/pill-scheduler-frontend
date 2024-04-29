@@ -3,12 +3,12 @@ import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
-const timeRangesWithAliases = {
-    '5AM-10AM': 'Morning (5AM-10AM)',
-    '10AM-12PM': 'Noon (10AM-12PM)',
-    '12PM-4PM': 'Afternoon (12PM-4PM)',
-    '4PM-8PM': 'Evening (4PM-8PM)',
-    '8PM-5AM': 'Night (8PM-5AM)'
+const timeRangeMap = {
+    'morning': '5AM-10AM',
+    'noon': '10AM-12PM',
+    'afternoon': '12PM-4PM',
+    'evening': '4PM-8PM',
+    'night': '8PM-5AM'
 };
 
 function PillManager() {
@@ -20,6 +20,7 @@ function PillManager() {
 
     const fetchPills = async () => {
         const response = await axios.get('http://localhost:4000/pills');
+        console.log('response', response);  
         const updatedPills = response.data.reduce((acc, pill) => {
             acc[pill.boxNumber] = { ...pill, schedule: mapSchedule(pill.schedule) };
             return acc;
@@ -29,10 +30,10 @@ function PillManager() {
 
     const mapSchedule = (scheduleArray) => {
         const scheduleMap = {};
-        Object.keys(timeRangesWithAliases).forEach(range => {
-            scheduleMap[range] = { checked: false, count: 1 }; // Default count initialized to 1
+        Object.keys(timeRangeMap).forEach(timeRange => {
+            scheduleMap[timeRange] = { checked: false, count: 1 }; // Default initialization
         });
-        (scheduleArray || []).forEach(item => {
+        scheduleArray.forEach(item => {
             if (scheduleMap[item.timeRange]) {
                 scheduleMap[item.timeRange] = { checked: true, count: item.count };
             }
@@ -75,11 +76,12 @@ function PillManager() {
         const scheduleToSend = Object.entries(pills[boxNumber].schedule)
             .filter(([_, details]) => details.checked)
             .map(([timeRange, details]) => ({
-                timeRange,
+                timeRange: timeRange, // Send alias instead of actual time range
                 count: details.count
             }));
 
         try {
+            console.log('scheduleToSend', scheduleToSend);
             await axios.post('http://localhost:4000/updateSchedule', { boxNumber, schedule: scheduleToSend });
             alert('Schedule saved successfully!');
         } catch (error) {
@@ -121,7 +123,7 @@ function PillManager() {
                                                 checked={checked}
                                                 onChange={e => updateSchedule(boxNumber, timeRange, e.target.checked, count)}
                                             />
-                                            {timeRangesWithAliases[timeRange]}
+                                            {`${timeRange} (${timeRangeMap[timeRange]})`}
                                             {checked && (
                                                 <input
                                                     type="number"
