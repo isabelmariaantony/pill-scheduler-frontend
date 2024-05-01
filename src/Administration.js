@@ -16,7 +16,7 @@ function Administration() {
 
     const fetchServerInfo = async () => {
         try {
-            const response = await axios.get('http://localhost:4000/getServerInfo');
+            const response = await axios.get('https://pill-scheduler-backend.onrender.com/getServerInfo');
             setServerInfo(response.data);
             setServerInfoError(''); // Clear any previous server info errors
         } catch (error) {
@@ -27,7 +27,7 @@ function Administration() {
 
     const fetchPillTimes = async () => {
         try {
-            const response = await axios.get('http://localhost:4000/pillsByTimeRange');
+            const response = await axios.get('https://pill-scheduler-backend.onrender.com/pillsByTimeRange');
             setPillTimes(response.data);
             setPillTimesError(''); // Clear any previous pills by time range errors
         } catch (error) {
@@ -38,7 +38,7 @@ function Administration() {
 
     const markServed = async () => {
         try {
-            await axios.get('http://localhost:4000/markServed');
+            await axios.get('https://pill-scheduler-backend.onrender.com/markServed');
             fetchPillTimes(); // Refresh the pill by time range data
         } catch (error) {
             console.error('Error marking time as served:', error);
@@ -48,7 +48,7 @@ function Administration() {
 
     const unMarkServed = async () => {
         try {
-            await axios.get('http://localhost:4000/unMarkServed');
+            await axios.get('https://pill-scheduler-backend.onrender.com/unMarkServed');
             fetchPillTimes(); // Refresh the pill by time range data
         } catch (error) {
             console.error('Error unmarking time as served:', error);

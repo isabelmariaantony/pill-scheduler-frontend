@@ -21,7 +21,7 @@ function PillManager() {
 
     const fetchPills = async () => {
         try {
-            const response = await axios.get('http://localhost:4000/pills');
+            const response = await axios.get('https://pill-scheduler-backend.onrender.com/pills');
             const updatedPills = response.data.reduce((acc, pill) => {
                 acc[pill.boxNumber] = { ...pill, schedule: mapSchedule(pill.schedule) };
                 return acc;
@@ -51,7 +51,7 @@ function PillManager() {
         const name = event.target.elements.name.value;
         const boxNumber = event.target.elements.boxNumber.value;
         try {
-            await axios.post('http://localhost:4000/addPill', { name, boxNumber });
+            await axios.post('https://pill-scheduler-backend.onrender.com/addPill', { name, boxNumber });
             fetchPills();
         } catch (error) {
             console.error('Error adding pill:', error);
@@ -61,7 +61,7 @@ function PillManager() {
 
     const handleDeletePill = async (boxNumber) => {
         try {
-            await axios.delete(`http://localhost:4000/deletePill/${boxNumber}`);
+            await axios.delete(`https://pill-scheduler-backend.onrender.com/deletePill/${boxNumber}`);
             fetchPills();
         } catch (error) {
             console.error('Error deleting pill:', error);
@@ -85,7 +85,7 @@ function PillManager() {
             }));
 
         try {
-            await axios.post('http://localhost:4000/updateSchedule', { boxNumber, schedule: scheduleToSend });
+            await axios.post('https://pill-scheduler-backend.onrender.com/updateSchedule', { boxNumber, schedule: scheduleToSend });
             alert('Schedule saved successfully!');
         } catch (error) {
             console.error('Error saving schedule:', error);
