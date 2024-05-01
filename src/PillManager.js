@@ -98,7 +98,7 @@ function PillManager() {
             <form onSubmit={handleAddPill}>
                 <input type="text" name="name" required placeholder="Pill Name" />
                 <select name="boxNumber" required>
-                    {Array.from({ length: 8 }, (_, i) => i + 1).map(box => 
+                    {Array.from({ length: 6 }, (_, i) => i + 1).map(box => 
                         (!pills[box] ? <option key={box} value={box}>{box}</option> : null)
                     )}
                 </select>
