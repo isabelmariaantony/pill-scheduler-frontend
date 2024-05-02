@@ -60,7 +60,7 @@ function Administration() {
         <div className="container">
             <h2>Server Information</h2>
             {serverInfoError ? <p className="error-message">{serverInfoError}</p> : <p>{JSON.stringify(serverInfo, null, 2)}</p>}
-            <h2>Pills by Time Range (No Parameters)</h2>
+            <h2>Pills for current time range</h2>
             {pillTimesError ? <p className="error-message">{pillTimesError}</p> : (
                  <p>
                   {JSON.stringify(pillTimes)}
